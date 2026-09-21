@@ -1,286 +1,758 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Complete 434 Web Dev & Node.js Practical Workbench</title>
-  <style>
-    :root {
-      --bg-dark: #0f172a;
-      --bg-card: #1e293b;
-      --bg-card-hover: #334155;
-      --accent: #38bdf8;
-      --accent-node: #22c55e;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: #334155;
-      --sidebar-width: 360px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practical Programs | Dasari Sanjay Bhargav</title>
+    <style>
+        /* iOS 27 Glassmorphic Floating Dark Theme */
+        :root {
+            --bg-color: #000000;
+            --glass-bg: rgba(30, 30, 35, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-highlight: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #ebebf599;
+            --accent-color: #0a84ff;
+            --accent-hover: #5e5ce6;
+            --card-radius: 32px;
+            --btn-radius: 20px;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-    body { background: var(--bg-dark); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    header {
-      background: #090d16;
-      border-bottom: 1px solid var(--border);
-      padding: 0.75rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 10;
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
 
-    .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.2rem; color: var(--accent); }
-    .nav-tabs { display: flex; gap: 0.4rem; overflow-x: auto; }
-    .tab-btn {
-      background: transparent; border: 1px solid var(--border); color: var(--text-muted);
-      padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;
-      transition: all 0.2s; white-space: nowrap;
-    }
-    .tab-btn:hover, .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        /* Animated Floating Bubbles */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            background: #000;
+        }
 
-    .search-box {
-      background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main);
-      padding: 0.5rem 1rem; border-radius: 6px; outline: none; width: 220px;
-    }
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.6;
+            animation: float 15s infinite alternate ease-in-out;
+        }
 
-    .main-container { display: flex; flex: 1; overflow: hidden; }
-    .sidebar { width: var(--sidebar-width); background: #111827; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
-    .sidebar-header { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold; }
-    .program-list { list-style: none; }
-    .program-item {
-      padding: 0.75rem 1rem; border-bottom: 1px solid #1f2937; cursor: pointer; display: flex; flex-direction: column; gap: 0.2rem;
-    }
-    .program-item:hover { background: var(--bg-card); }
-    .program-item.active { background: var(--bg-card-hover); border-left: 4px solid var(--accent); }
-    .program-item .title { font-size: 0.9rem; font-weight: 600; }
-    .program-item .tag { font-size: 0.75rem; color: var(--text-muted); }
+        .bubble:nth-child(1) {
+            width: 400px; height: 400px;
+            background: #5e5ce6;
+            top: -10%; left: -10%;
+            animation-duration: 18s;
+        }
 
-    .workspace { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); }
-    .workspace-header { padding: 0.85rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #131d31; }
-    .workspace-title h2 { font-size: 1.15rem; }
-    .workspace-title p { font-size: 0.8rem; color: var(--text-muted); }
+        .bubble:nth-child(2) {
+            width: 500px; height: 500px;
+            background: #0a84ff;
+            bottom: -20%; right: -10%;
+            animation-duration: 22s;
+        }
 
-    .workspace-body { flex: 1; display: flex; overflow: hidden; }
-    .panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .panel-header { background: #0d1322; padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-    .code-editor { flex: 1; background: #090d16; color: #e2e8f0; padding: 1rem; overflow: auto; white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 0.85rem; line-height: 1.5; }
-    iframe { width: 100%; height: 100%; border: none; background: #ffffff; }
+        .bubble:nth-child(3) {
+            width: 350px; height: 350px;
+            background: #32d74b;
+            top: 40%; left: 40%;
+            animation-duration: 25s;
+        }
 
-    .dashboard-view { padding: 2rem; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; width: 100%; }
-    .dash-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem; }
-    .dash-card h3 { color: var(--accent); font-size: 1.15rem; }
-    .dash-card p { color: var(--text-muted); font-size: 0.85rem; }
-    .dash-card button { background: var(--accent); color: #000; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 700; cursor: pointer; }
-    .dash-card button:hover { background: #0284c7; color: #fff; }
-    .hidden { display: none !important; }
-  </style>
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(100px, 50px) scale(1.2); }
+            100% { transform: translate(-50px, 100px) scale(0.9); }
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1.5px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255,255,255,0.1);
+        }
+
+        /* Header Navigation */
+        header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            margin: 0 20px;
+            border-radius: 100px;
+            transition: all 0.4s ease;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #fff, #a1a1aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+            padding: 10px 24px;
+            border-radius: 100px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(10, 132, 255, 0.5);
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            padding: 40px 20px;
+            max-width: 1300px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        /* Student Info Profile */
+        .profile-card {
+            padding: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-card h2 { font-size: 2rem; font-weight: 700; }
+        .profile-card p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge {
+            background: rgba(10, 132, 255, 0.2);
+            color: #0a84ff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(10, 132, 255, 0.3);
+        }
+
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .category-card {
+            padding: 40px 30px;
+            text-align: center;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at top left, rgba(255,255,255,0.1), transparent);
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--glass-highlight);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        }
+        
+        .category-card:hover::before { opacity: 1; }
+
+        .category-card h3 { font-size: 2rem; font-weight: 700; }
+        .category-card p { color: var(--text-secondary); line-height: 1.5; }
+
+        .view-btn {
+            background: var(--text-primary);
+            color: #000;
+            border: none;
+            padding: 14px 32px;
+            border-radius: var(--btn-radius);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            z-index: 1;
+        }
+
+        .view-btn:hover {
+            background: var(--accent-color);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(10, 132, 255, 0.4);
+        }
+
+        /* List View */
+        .list-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .list-header h2 { font-size: 2.5rem; font-weight: 800; }
+
+        .program-list {
+            list-style: none;
+            display: grid;
+            gap: 15px;
+        }
+
+        .program-list li {
+            padding: 20px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .program-list li:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(10px);
+            border-color: var(--glass-highlight);
+        }
+
+        .program-list li::before {
+            content: "•";
+            color: var(--accent-color);
+            margin-right: 15px;
+            font-size: 2rem;
+            line-height: 0;
+        }
+
+        /* Detail View (Code & Output) */
+        .detail-header { text-align: center; margin-bottom: 10px; }
+        .detail-header h2 { font-size: 2rem; font-weight: 700; margin-bottom: 10px;}
+        
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            height: 65vh;
+        }
+
+        @media (max-width: 1024px) {
+            .workspace { grid-template-columns: 1fr; height: auto; }
+        }
+
+        .editor-pane, .output-pane {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .pane-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        pre {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 16px;
+            overflow: auto;
+            flex: 1;
+            border: 1px solid var(--glass-border);
+            color: #d8dee9;
+            font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        iframe {
+            width: 100%;
+            flex: 1;
+            min-height: 400px;
+            border: none;
+            border-radius: 16px;
+            background: #ffffff; /* White background to accurately test standard web projects */
+        }
+
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
 
-  <header>
-    <div class="brand">⚡ 434 Practical Program Lab</div>
-    <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchCategory('all')">Dashboard</button>
-      <button class="tab-btn" onclick="switchCategory('html')">HTML</button>
-      <button class="tab-btn" onclick="switchCategory('css')">CSS</button>
-      <button class="tab-btn" onclick="switchCategory('js')">JS Fundamentals</button>
-      <button class="tab-btn" onclick="switchCategory('dom')">DOM Manipulation</button>
-      <button class="tab-btn" onclick="switchCategory('events')">Events</button>
-      <button class="tab-btn" onclick="switchCategory('forms')">Forms & Validation</button>
-      <button class="tab-btn" onclick="switchCategory('browser')">Browser & Storage</button>
-      <button class="tab-btn" onclick="switchCategory('node')">Node.js Express</button>
-    </div>
-    <input type="text" id="searchInput" class="search-box" placeholder="Search 434 questions..." oninput="handleSearch()">
-  </header>
-
-  <div class="main-container">
-    <div class="sidebar">
-      <div class="sidebar-header" id="sidebarTitle">All Programs (434)</div>
-      <ul class="program-list" id="programList"></ul>
+    <!-- Ambient Background Bubbles -->
+    <div class="ambient-bg">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
     </div>
 
-    <div class="workspace">
-      <div id="dashboardView" class="dashboard-view">
-        <div class="dash-card">
-          <h3>HTML Programs</h3>
-          <p>Headings, tables, lists, HTML5 inputs, forms, audio/video, and semantic layouts.</p>
-          <button onclick="switchCategory('html')">View HTML Questions</button>
+    <!-- Top Navigation -->
+    <header class="glass-panel" id="main-header">
+        <h1>Yahooo!!</h1>
+        <div class="nav-links">
+            <button class="nav-btn" onclick="navigate('home')">Dashboard</button>
+            <button id="back-btn" class="nav-btn hidden" onclick="navigate('list')">Back to Programs</button>
         </div>
-        <div class="dash-card">
-          <h3>CSS Styling & Layouts</h3>
-          <p>Selectors, flexbox, CSS Grid, media queries, keyframe animations, and 3D transforms.</p>
-          <button onclick="switchCategory('css')">View CSS Questions</button>
-        </div>
-        <div class="dash-card">
-          <h3>JS Core Programming</h3>
-          <p>Algorithms, array methods, string ops, ES6 classes, async/await, and Math/Date methods.</p>
-          <button onclick="switchCategory('js')">View JS Questions</button>
-        </div>
-        <div class="dash-card">
-          <h3>DOM Manipulation</h3>
-          <p>Dynamic tables, dynamic lists, attributes, active class toggles, and live character counters.</p>
-          <button onclick="switchCategory('dom')">View DOM Questions</button>
-        </div>
-        <div class="dash-card">
-          <h3>JS Events</h3>
-          <p>Mouse coords, key bindings, bubbling, delegation, drag-and-drop, and typing speed tests.</p>
-          <button onclick="switchCategory('events')">View Events Questions</button>
-        </div>
-        <div class="dash-card">
-          <h3>Forms & Validation</h3>
-          <p>Regex email validation, age calculators, password strength meters, and multi-step forms.</p>
-          <button onclick="switchCategory('forms')">View Form Questions</button>
-        </div>
-        <div class="dash-card">
-          <h3>Browser & Storage</h3>
-          <p>LocalStorage CRUD, sessionStorage, geolocation API, window timers, and dark mode state.</p>
-          <button onclick="switchCategory('browser')">View Storage Questions</button>
-        </div>
-        <div class="dash-card">
-          <h3>Node.js & Express</h3>
-          <p>HTTP servers, REST APIs, routing, middleware, JWT authentication, and database connectivity.</p>
-          <button onclick="switchCategory('node')">View Node.js Questions</button>
-        </div>
-      </div>
+    </header>
 
-      <div id="executionView" class="workspace" style="display: none;">
-        <div class="workspace-header">
-          <div class="workspace-title">
-            <h2 id="activeTitle">Select a Question</h2>
-            <p id="activeDesc">Select any of the 434 practical questions from the left menu to view source code and runnable sandbox.</p>
-          </div>
+    <!-- DASHBOARD VIEW -->
+    <main id="view-home">
+        <div class="profile-card glass-panel">
+            <h2>Practical Programs Portfolio</h2>
+            <p><strong>Name:</strong> Dasari Sanjay Bhargav &nbsp;&bull;&nbsp; <strong>PRN:</strong> 250200509</p>
+            <span class="badge">Group: SCDS</span>
         </div>
-        <div class="workspace-body">
-          <div class="panel">
-            <div class="panel-header">Executable Solution Code</div>
-            <pre class="code-editor"><code id="codeViewer"></code></pre>
-          </div>
-          <div class="panel">
-            <div class="panel-header">Live Output Preview / Environment Sandbox</div>
-            <iframe id="previewFrame"></iframe>
-          </div>
+
+        <div class="dashboard-grid">
+            <div class="category-card glass-panel">
+                <h3>HTML</h3>
+                <p>Fundamentals, Structural Semantics, Forms, Media, Tables, and Validation.</p>
+                <button class="view-btn" onclick="loadList('html')">View HTML Programs</button>
+            </div>
+            <div class="category-card glass-panel">
+                <h3>CSS</h3>
+                <p>Styling, Box Model, Flexbox, Grid Layouts, Animations, and Responsive Design.</p>
+                <button class="view-btn" onclick="loadList('css')">View CSS Programs</button>
+            </div>
+            <div class="category-card glass-panel">
+                <h3>JavaScript</h3>
+                <p>Logic, DOM Manipulation, Events, Web Storage, ES6+, and Mini Projects.</p>
+                <button class="view-btn" onclick="loadList('javascript')">View JS Programs</button>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
+    </main>
 
-  <script>
-    // System registry generator for all 434 assignment questions
-    const categories = ['html', 'css', 'js', 'dom', 'events', 'forms', 'browser', 'node'];
-    
-    // Sample question templates for dynamic generation covering the complete prompt array
-    const questionTopics = {
-      html: ["Basic Headings & Paragraphs", "Ordered/Unordered Lists", "Tables with Merged Cells", "Images and Links", "Registration Form Controls", "Audio & Video Embedding", "Iframe Containers", "Semantic Header & Footer", "HTML5 Special Inputs", "College Timetable Grid"],
-      css: ["Box Model Margins & Padding", "Flexbox Container Alignment", "CSS Grid Multi-column Layout", "CSS Animations & Transitions", "Custom CSS Variables", "Media Queries Responsive Layout", "CSS Positioning Static/Absolute", "Hover & Focus Pseudo Classes"],
-      js: ["Display Hello World", "Arithmetic Calculations", "Largest of Three Numbers", "Even or Odd Checker", "Factorial Generator", "Fibonacci Series Generator", "Prime Number Checker", "Palindrome Word Evaluation", "Reverse Number Algorithm", "Array Min/Max Finder"],
-      dom: ["Dynamic Element Creation", "Remove Element on Click", "Live Character Counter", "Password Show/Hide Toggle", "Dynamic Table Row Insertion", "Search Table Filter", "Dependent Country-State Dropdown", "Image Slideshow Carousel"],
-      events: ["Mouse Coordinate Tracker", "Keyboard Key Press Counter", "Event Bubbling & Capturing", "Drag and Drop Box", "Double Click Counter", "Keyboard Controlled Box Movement", "Reaction Speed Click Game"],
-      forms: ["Email Regex Validator", "Password Strength Meter", "Age DOB Auto Calculator", "Multi-Step Form Wizard", "Feedback Form Dynamic Errors", "College Admission Validation"],
-      browser: ["LocalStorage Record CRUD", "SessionStorage Temp Form", "Dark Theme Switcher Storage", "Geolocation Coordinates API", "Browser Online/Offline Detection", "Window Timer Digital Clock"],
-      node: ["Node.js Basic HTTP Server", "Express GET & POST Routing", "Custom Logging Middleware", "JSON REST API Endpoints", "JWT Authentication Route", "MongoDB/SQL Database CRUD"]
-    };
+    <!-- LIST VIEW -->
+    <main id="view-list" class="hidden">
+        <div class="list-header">
+            <h2 id="list-title">Programs</h2>
+        </div>
+        <ul class="program-list" id="program-list-ul">
+            <!-- Dynamically populated via JS -->
+        </ul>
+    </main>
 
-    // Full 434-entry question database dynamic compiler
-    const programs = [];
-    let idCounter = 1;
+    <!-- DETAIL / EXECUTION VIEW -->
+    <main id="view-detail" class="hidden">
+        <div class="detail-header">
+            <h2 id="detail-title">Program Title</h2>
+        </div>
+        <div class="workspace">
+            <div class="editor-pane glass-panel">
+                <div class="pane-header">Source Code (HTML/CSS/JS)</div>
+                <pre><code id="code-block"></code></pre>
+            </div>
+            <div class="output-pane glass-panel">
+                <div class="pane-header">Live Preview</div>
+                <iframe id="output-frame"></iframe>
+            </div>
+        </div>
+    </main>
 
-    categories.forEach(cat => {
-      const topics = questionTopics[cat];
-      for (let i = 1; i <= 55; i++) {
-        const topicName = topics[(i - 1) % topics.length];
-        const titleStr = `${topicName} - Case #${i}`;
-        let sampleCode = '';
+    <script>
+        // ==========================================
+        // DATABASE: ALL QUESTIONS FROM ASSIGNMENT
+        // ==========================================
+        const assignmentData = {
+            html: [
+                "Create a basic HTML webpage using headings, paragraphs, and line breaks.",
+                "Create an HTML page containing ordered, unordered, and description lists.",
+                "Create a webpage using tables with rows, columns, borders, and merged cells.",
+                "Create an HTML page containing images and hyperlinks.",
+                "Create a student registration form using HTML form elements.",
+                "Create a webpage using audio and video elements.",
+                "Create a webpage using frames/iframes.",
+                "Create an HTML page demonstrating semantic elements such as <header>, <nav>, <section>, <article>, and <footer>.",
+                "Create a webpage using HTML5 input types such as email, date, number, and password.",
+                "Create a college timetable using an HTML table.",
+                "Create a webpage with internal and external CSS styling.",
+                "Create a webpage demonstrating CSS selectors, colors, fonts, margins, padding, and borders.",
+                "Create a responsive webpage using CSS media queries.",
+                "Create a webpage using Bootstrap components.",
+                "Create a simple personal portfolio webpage using HTML and CSS."
+            ],
+            css: [
+                "Create a webpage demonstrating inline, internal, and external CSS.",
+                "Create a webpage using different CSS selectors.",
+                "Demonstrate CSS colors, backgrounds, and borders.",
+                "Create a webpage demonstrating font properties and text formatting.",
+                "Demonstrate the CSS box model using margin, border, padding, and content.",
+                "Create a webpage using different width, height, and sizing properties.",
+                "Create a webpage demonstrating CSS positioning — static, relative, absolute, fixed, and sticky.",
+                "Create a webpage using float and clear properties.",
+                "Create a styled navigation bar using CSS.",
+                "Create a webpage demonstrating pseudo-classes such as :hover, :active, :focus, and :visited.",
+                "Create a webpage demonstrating pseudo-elements such as ::before, ::after, ::first-letter, and ::first-line.",
+                "Create a webpage using CSS lists and tables.",
+                "Create a webpage with a styled registration form using CSS.",
+                "Create a webpage demonstrating CSS Flexbox.",
+                "Create a webpage demonstrating CSS Grid layout.",
+                "Create a responsive webpage using CSS media queries.",
+                "Create a webpage demonstrating transitions and transformations.",
+                "Create a webpage using CSS animations.",
+                "Create a responsive navigation menu using HTML and CSS.",
+                "Design a personal portfolio webpage using HTML and CSS.",
+                "Design a college/student profile page using HTML and CSS.",
+                "Create a login page using HTML and CSS.",
+                "Create a product card layout using CSS.",
+                "Create a responsive photo gallery using CSS Grid/Flexbox.",
+                "Create a complete website homepage using HTML and CSS.",
+                "Create a webpage demonstrating CSS inheritance and specificity.",
+                "Demonstrate the use of universal, element, class, ID, attribute, and grouping selectors.",
+                "Create a webpage using combinator selectors: descendant, child, adjacent sibling, and general sibling.",
+                "Create a webpage demonstrating CSS variables (custom properties).",
+                "Create a webpage using different background images and background positioning.",
+                "Demonstrate linear gradients and radial gradients using CSS.",
+                "Create a webpage demonstrating box-shadow and text-shadow.",
+                "Create a webpage using border-radius to design different shapes.",
+                "Demonstrate opacity and transparency using CSS.",
+                "Create a webpage using overflow properties.",
+                "Demonstrate z-index and stacking order.",
+                "Create a webpage using CSS display properties such as block, inline, inline-block, and none.",
+                "Create a webpage demonstrating visibility and hiding elements.",
+                "Create a dropdown menu using HTML and CSS.",
+                "Create an image hover effect using CSS.",
+                "Create a tooltip using CSS.",
+                "Create a webpage with a CSS-only button hover animation.",
+                "Create a webpage demonstrating CSS filters such as blur, grayscale, brightness, and contrast.",
+                "Create a webpage demonstrating object-fit and object-position.",
+                "Create a responsive image gallery using CSS.",
+                "Create a card-based layout using Flexbox.",
+                "Create a dashboard layout using CSS Grid.",
+                "Create a two-column webpage layout using CSS Grid.",
+                "Create a three-column webpage layout using Flexbox.",
+                "Create a webpage with a sticky header.",
+                "Create a webpage with a fixed sidebar.",
+                "Create a responsive footer using HTML and CSS.",
+                "Create a responsive login and signup page.",
+                "Create a responsive contact form.",
+                "Create a responsive college website homepage.",
+                "Create a restaurant webpage using HTML and CSS.",
+                "Create an online shopping webpage using CSS.",
+                "Create a travel website homepage using CSS.",
+                "Create a news/blog webpage layout using CSS Grid.",
+                "Create a portfolio website with multiple sections using HTML and CSS.",
+                "Create a webpage using CSS Grid template areas.",
+                "Demonstrate Flexbox alignment and ordering properties.",
+                "Create a responsive layout using CSS Grid and media queries.",
+                "Create a mobile-first responsive webpage.",
+                "Create a webpage demonstrating CSS transitions.",
+                "Create a webpage demonstrating 2D and 3D CSS transformations.",
+                "Create a webpage using keyframe animations.",
+                "Create a loading spinner animation using CSS.",
+                "Create a sliding image/card animation using CSS.",
+                "Create a CSS-only modal/popup design.",
+                "Create a dark-mode webpage using CSS variables.",
+                "Create a webpage demonstrating responsive typography.",
+                "Create a webpage using clamp(), min(), and max() CSS functions.",
+                "Create a webpage demonstrating CSS calc() function.",
+                "Create a complete responsive website using HTML5, CSS3, Flexbox, Grid, and media queries."
+            ],
+            javascript: [
+                "Write a JavaScript program to display “Hello World”.",
+                "Write a JavaScript program to perform arithmetic operations.",
+                "Write a program to find the largest of three numbers.",
+                "Write a program to check whether a number is even or odd.",
+                "Write a program to check whether a number is positive, negative, or zero.",
+                "Write a program to find the factorial of a number.",
+                "Write a program to generate the Fibonacci series.",
+                "Write a program to check whether a number is prime.",
+                "Write a program to check whether a number is a palindrome.",
+                "Write a program to reverse a number.",
+                "Write a program to find the sum of digits of a number.",
+                "Write a program to find the largest and smallest element in an array.",
+                "Write a program to sort an array.",
+                "Write a program to find the sum and average of array elements.",
+                "Write a program to demonstrate JavaScript functions.",
+                "Write a program using arrow functions.",
+                "Write a program demonstrating strings and string methods.",
+                "Write a program demonstrating arrays and array methods.",
+                "Write a program demonstrating objects in JavaScript.",
+                "Write a program demonstrating Date and Math objects.",
+                "Create a webpage that changes text using JavaScript.",
+                "Change the background color of a webpage using JavaScript.",
+                "Create a button click event using JavaScript.",
+                "Create a program to show/hide an HTML element.",
+                "Create a program to change an image when a button is clicked.",
+                "Create a digital clock using JavaScript.",
+                "Create a simple calculator using HTML, CSS, and JavaScript.",
+                "Create a number guessing game.",
+                "Create a form validation program.",
+                "Validate name, email, phone number, and password using JavaScript.",
+                "Create a to-do list using JavaScript.",
+                "Create a simple quiz application.",
+                "Create a counter application with increment and decrement buttons.",
+                "Create a stopwatch using JavaScript.",
+                "Create a countdown timer using JavaScript.",
+                "Demonstrate ES6 let, const, template literals, and destructuring.",
+                "Demonstrate spread and rest operators.",
+                "Demonstrate classes and objects.",
+                "Demonstrate inheritance in JavaScript.",
+                "Demonstrate callbacks, promises, and async/await.",
+                "Fetch data from an API using Fetch API.",
+                "Display API data dynamically on a webpage.",
+                "Store and retrieve data using localStorage.",
+                "Create a responsive login form with JavaScript validation.",
+                "Create a complete interactive webpage using HTML, CSS, and JavaScript.",
+                "Write a JavaScript program to swap two numbers.",
+                "Write a program to find the greatest common divisor (GCD) of two numbers.",
+                "Write a program to find the least common multiple (LCM) of two numbers.",
+                "Write a program to check whether a number is an Armstrong number.",
+                "Write a program to check whether a number is a perfect number.",
+                "Write a program to generate the multiplication table of a given number.",
+                "Write a program to calculate the power of a number.",
+                "Write a program to count the number of digits in a number.",
+                "Write a program to find the second-largest element in an array.",
+                "Write a program to remove duplicate elements from an array.",
+                "Write a program to merge two arrays.",
+                "Write a program to find the frequency of each element in an array.",
+                "Write a program to find common elements in two arrays.",
+                "Write a program to reverse a string.",
+                "Write a program to check whether a string is a palindrome.",
+                "Write a program to count vowels and consonants in a string.",
+                "Write a program to count the number of words in a string.",
+                "Write a program to find the frequency of characters in a string.",
+                "Write a program to demonstrate regular expressions in JavaScript.",
+                "Write a program to validate an email address using a regular expression.",
+                "Create a webpage and use JavaScript to add new elements dynamically.",
+                "Create a program to remove HTML elements dynamically.",
+                "Create a program to change CSS styles using JavaScript.",
+                "Create a program to change multiple HTML elements simultaneously.",
+                "Demonstrate getElementById() and getElementsByClassName().",
+                "Demonstrate querySelector() and querySelectorAll().",
+                "Create a program to create and remove CSS classes dynamically.",
+                "Create a dynamic table using JavaScript.",
+                "Create a program to add and delete rows from a table.",
+                "Create a program to search/filter table records.",
+                "Create a live character counter for a textarea.",
+                "Create a password show/hide feature.",
+                "Create a dynamic dropdown list.",
+                "Create a dependent dropdown such as Country → State → City.",
+                "Create an image slideshow/carousel using JavaScript.",
+                "Demonstrate mouse events using JavaScript.",
+                "Demonstrate keyboard events using JavaScript.",
+                "Demonstrate form events such as submit, change, focus, and blur.",
+                "Create a webpage that responds to double-click events.",
+                "Create a program using event bubbling and event capturing.",
+                "Demonstrate event delegation.",
+                "Create a keyboard-controlled webpage/game.",
+                "Create a drag-and-drop application using JavaScript.",
+                "Create a student registration form with JavaScript validation.",
+                "Create a login form with username and password validation.",
+                "Create a password strength checker.",
+                "Create a signup form with password confirmation.",
+                "Create a feedback form with validation.",
+                "Create a college admission form with JavaScript validation.",
+                "Display validation error messages dynamically without reloading the page.",
+                "Demonstrate the Window object.",
+                "Demonstrate the Navigator object.",
+                "Demonstrate the Location object.",
+                "Demonstrate the History object.",
+                "Create a program using localStorage.",
+                "Create a program using sessionStorage.",
+                "Create a shopping cart using localStorage.",
+                "Create a theme switcher (light/dark mode) using localStorage.",
+                "Create a weather application using an API.",
+                "Create a tic-tac-toe game.",
+                "Create a simple expense tracker.",
+                "Create a student marks/grade calculator.",
+                "Create a simple shopping cart.",
+                "Create a notes application using localStorage.",
+                "Create a random password generator.",
+                "Create a BMI calculator.",
+                "Create a currency converter using an API."
+            ]
+        };
 
-        if (cat === 'node') {
-          sampleCode = `// Node.js & Express - ${titleStr}\nconst express = require('express');\nconst app = express();\napp.use(express.json());\n\napp.get('/api/resource', (req, res) => {\n  res.json({ success: true, message: "Node.js API endpoint executing successfully for question #${idCounter}" });\n});\n\napp.listen(3000, () => console.log('Server running on port 3000'));`;
-        } else {
-          sampleCode = `<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body { font-family: sans-serif; padding: 20px; background: #1e293b; color: #fff; }\n  .btn { background: #38bdf8; color: #000; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }\n</style>\n</head>\n<body>\n  <h3>Question #${idCounter}: ${titleStr}</h3>\n  <p>Practical execution sandbox for ${cat.toUpperCase()} assignment demonstration.</p>\n  <button class="btn" onclick="executeTask()">Run Test Function</button>\n  <div id="output" style="margin-top:15px; color:#22c55e;"></div>\n  <script>\n    function executeTask() {\n      document.getElementById('output').innerText = "Execution completed successfully for Q#${idCounter}!";\n    }\n  <\/script>\n</body>\n</html>`;
+        // ==========================================
+        // KEY SOLUTIONS (Mini Projects & Core Concepts)
+        // ==========================================
+        const predefinedSolutions = {
+            "html-4": { // Registration Form
+                html: `<div class="container">\n  <h2>Student Registration</h2>\n  <form>\n    <label>Full Name:</label>\n    <input type="text" required placeholder="John Doe">\n    <label>Email ID:</label>\n    <input type="email" required placeholder="john@college.edu">\n    <label>Course:</label>\n    <select>\n      <option>B.Tech CSE</option>\n      <option>B.Tech IT</option>\n    </select>\n    <button type="submit">Register Now</button>\n  </form>\n</div>`,
+                css: `body { font-family: system-ui; background: #f0f2f5; display: flex; justify-content: center; padding: 40px; }\n.container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }\nlabel { display: block; margin-top: 15px; font-weight: 600; font-size: 14px; }\ninput, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }\nbutton { margin-top: 20px; width: 100%; padding: 12px; background: #0a84ff; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }\nbutton:hover { background: #0066cc; }`,
+                js: `document.querySelector('form').addEventListener('submit', (e) => {\n  e.preventDefault();\n  alert('Student Registration Successful!');\n});`
+            },
+            "css-13": { // Flexbox
+                html: `<div class="flex-container">\n  <div class="box">Item 1</div>\n  <div class="box">Item 2</div>\n  <div class="box">Item 3</div>\n  <div class="box">Item 4</div>\n</div>`,
+                css: `body { font-family: sans-serif; padding: 20px; }\n.flex-container {\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center;\n  background: #333;\n  padding: 20px;\n  border-radius: 12px;\n  height: 300px;\n}\n.box {\n  background: #0a84ff;\n  color: white;\n  padding: 20px;\n  font-size: 1.2rem;\n  font-weight: bold;\n  border-radius: 8px;\n  transition: transform 0.3s;\n}\n.box:hover { transform: scale(1.1); }`,
+                js: ``
+            },
+            "javascript-0": { // Hello World
+                html: `<h1 id="msg"></h1>`,
+                css: `body { display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; background: #f9f9f9; }\nh1 { color: #333; font-size: 3rem; }`,
+                js: `document.getElementById('msg').innerText = "Hello World!";\nconsole.log("Hello World executed.");`
+            },
+            "javascript-25": { // Digital Clock
+                html: `<div class="clock-container">\n  <div id="clock">00:00:00</div>\n</div>`,
+                css: `body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #111; margin: 0; }\n.clock-container { background: #222; padding: 30px 50px; border-radius: 20px; box-shadow: 0 0 30px rgba(10, 132, 255, 0.4); border: 1px solid #333; }\n#clock { color: #0a84ff; font-size: 4rem; font-family: 'Courier New', monospace; font-weight: bold; text-shadow: 0 0 10px #0a84ff; }`,
+                js: `function updateClock() {\n  const now = new Date();\n  let h = String(now.getHours()).padStart(2, '0');\n  let m = String(now.getMinutes()).padStart(2, '0');\n  let s = String(now.getSeconds()).padStart(2, '0');\n  document.getElementById('clock').innerText = \`\${h}:\${m}:\${s}\`;\n}\nsetInterval(updateClock, 1000);\nupdateClock();`
+            },
+            "javascript-26": { // Calculator
+                html: `<div class="calculator">\n  <input type="text" id="display" disabled>\n  <div class="buttons">\n    <button onclick="append('7')">7</button>\n    <button onclick="append('8')">8</button>\n    <button onclick="append('9')">9</button>\n    <button onclick="append('/')" class="op">/</button>\n    <button onclick="append('4')">4</button>\n    <button onclick="append('5')">5</button>\n    <button onclick="append('6')">6</button>\n    <button onclick="append('*')" class="op">×</button>\n    <button onclick="append('1')">1</button>\n    <button onclick="append('2')">2</button>\n    <button onclick="append('3')">3</button>\n    <button onclick="append('-')" class="op">-</button>\n    <button onclick="clearDisplay()" class="clear">C</button>\n    <button onclick="append('0')">0</button>\n    <button onclick="calculate()" class="equals">=</button>\n    <button onclick="append('+')" class="op">+</button>\n  </div>\n</div>`,
+                css: `body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #e0e5ec; font-family: system-ui; }\n.calculator { background: #fff; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 320px; }\n#display { width: 100%; padding: 20px; font-size: 2rem; text-align: right; margin-bottom: 20px; border: none; background: #f4f4f4; border-radius: 10px; box-sizing: border-box; }\n.buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }\nbutton { padding: 20px; font-size: 1.2rem; border: none; border-radius: 10px; background: #f0f0f0; cursor: pointer; transition: 0.2s; font-weight: bold; }\nbutton:hover { background: #e4e4e4; }\n.op { background: #ff9f0a; color: white; }\n.op:hover { background: #e08900; }\n.equals { background: #32d74b; color: white; }\n.clear { background: #ff3b30; color: white; }`,
+                js: `const display = document.getElementById('display');\nfunction append(val) { display.value += val; }\nfunction clearDisplay() { display.value = ''; }\nfunction calculate() {\n  try { display.value = eval(display.value); }\n  catch(e) { display.value = 'Error'; setTimeout(clearDisplay, 1500); }\n}`
+            },
+            "javascript-30": { // To-Do List
+                html: `<div class="todo-wrapper">\n  <h2>Task Manager</h2>\n  <div class="input-group">\n    <input type="text" id="taskInput" placeholder="Enter a new task...">\n    <button onclick="addTask()">Add</button>\n  </div>\n  <ul id="taskList"></ul>\n</div>`,
+                css: `body { display: flex; justify-content: center; padding-top: 10vh; background: #fafafa; font-family: sans-serif; }\n.todo-wrapper { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 400px; }\nh2 { margin-top: 0; color: #333; text-align: center; }\n.input-group { display: flex; gap: 10px; margin-bottom: 20px; }\ninput { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; }\nbutton { padding: 12px 20px; background: #0a84ff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }\nul { list-style: none; padding: 0; margin: 0; }\nli { background: #f9f9f9; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #0a84ff; }\n.del-btn { background: #ff3b30; padding: 6px 12px; font-size: 0.8rem; }`,
+                js: `function addTask() {\n  const input = document.getElementById('taskInput');\n  const list = document.getElementById('taskList');\n  if (input.value.trim() === '') return;\n  \n  const li = document.createElement('li');\n  li.innerHTML = \`<span>\${input.value}</span> <button class='del-btn' onclick='this.parentElement.remove()'>Delete</button>\`;\n  list.appendChild(li);\n  input.value = '';\n}`
+            },
+            "javascript-33": { // Stopwatch
+                html: `<div class="stopwatch">\n  <div id="time">00:00:00</div>\n  <div class="controls">\n    <button onclick="startTimer()" class="start">Start</button>\n    <button onclick="stopTimer()" class="stop">Stop</button>\n    <button onclick="resetTimer()" class="reset">Reset</button>\n  </div>\n</div>`,
+                css: `body { display: flex; justify-content: center; align-items: center; height: 100vh; font-family: system-ui; background: #2c3e50; }\n.stopwatch { text-align: center; background: #ecf0f1; padding: 40px; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }\n#time { font-size: 4rem; font-family: monospace; font-weight: bold; color: #2c3e50; margin-bottom: 30px; }\nbutton { padding: 12px 25px; margin: 0 5px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; color: white; transition: 0.2s; }\n.start { background: #27ae60; }\n.stop { background: #e74c3c; }\n.reset { background: #7f8c8d; }`,
+                js: `let timer, seconds = 0, isRunning = false;\nconst display = document.getElementById('time');\n\nfunction updateDisplay() {\n  let h = String(Math.floor(seconds / 3600)).padStart(2, '0');\n  let m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');\n  let s = String(seconds % 60).padStart(2, '0');\n  display.innerText = \`\${h}:\${m}:\${s}\`;\n}\n\nfunction startTimer() {\n  if(!isRunning) {\n    isRunning = true;\n    timer = setInterval(() => { seconds++; updateDisplay(); }, 1000);\n  }\n}\nfunction stopTimer() {\n  clearInterval(timer);\n  isRunning = false;\n}\nfunction resetTimer() {\n  stopTimer();\n  seconds = 0;\n  updateDisplay();\n}`
+            }
+        };
+
+        // ==========================================
+        // DYNAMIC FALLBACK GENERATOR
+        // ==========================================
+        function getDynamicSolution(category, title) {
+            return {
+                html: `<div class="container">\n  <h2>${title}</h2>\n  <p>This is a dynamic implementation placeholder for the requested assignment question.</p>\n  <button onclick="demoAction()">Run Test</button>\n</div>`,
+                css: `body { font-family: -apple-system, system-ui; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; margin:0; }\n.container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }\nh2 { color: #1a1a1a; font-size: 1.4rem; margin-bottom: 15px; }\np { color: #666; margin-bottom: 25px; line-height: 1.5; }\nbutton { background: #0a84ff; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.3s; }\nbutton:hover { background: #0066cc; }`,
+                js: `function demoAction() {\n  alert('Executed function for: \\n${title}');\n  console.log('Action triggered successfully.');\n}`
+            };
         }
 
-        programs.push({
-          id: `${cat}-${i}`,
-          num: idCounter,
-          category: cat,
-          title: `Q${idCounter}: ${titleStr}`,
-          desc: `Demonstration program for question #${idCounter} under ${cat.toUpperCase()} category.`,
-          code: sampleCode
-        });
-        idCounter++;
-      }
-    });
+        // ==========================================
+        // UI & NAVIGATION LOGIC
+        // ==========================================
+        function navigate(view) {
+            // Hide all views
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-list').classList.add('hidden');
+            document.getElementById('view-detail').classList.add('hidden');
+            
+            // Show requested view & manage back button
+            if (view === 'home') {
+                document.getElementById('view-home').classList.remove('hidden');
+                document.getElementById('back-btn').classList.add('hidden');
+            } else if (view === 'list') {
+                document.getElementById('view-list').classList.remove('hidden');
+                document.getElementById('back-btn').classList.remove('hidden');
+                document.getElementById('back-btn').setAttribute('onclick', "navigate('home')");
+            } else if (view === 'detail') {
+                document.getElementById('view-detail').classList.remove('hidden');
+                document.getElementById('back-btn').classList.remove('hidden');
+                document.getElementById('back-btn').setAttribute('onclick', "navigate('list')");
+            }
+        }
 
-    // App Control logic
-    let activeCategory = 'all';
-    let currentProgram = null;
+        function loadList(category) {
+            const titleMap = { 
+                html: 'HTML Practical Programs', 
+                css: 'CSS Practical Programs', 
+                javascript: 'JavaScript Practical Programs' 
+            };
+            document.getElementById('list-title').innerText = titleMap[category];
+            
+            const ul = document.getElementById('program-list-ul');
+            ul.innerHTML = '';
+            
+            // Populate list items
+            assignmentData[category].forEach((programTitle, index) => {
+                const li = document.createElement('li');
+                li.className = 'glass-panel';
+                li.innerText = programTitle;
+                li.onclick = () => loadDetail(category, index, programTitle);
+                ul.appendChild(li);
+            });
+            
+            navigate('list');
+        }
 
-    function renderProgramList(filterCat = 'all', query = '') {
-      const listEl = document.getElementById('programList');
-      listEl.innerHTML = '';
+        function loadDetail(category, index, title) {
+            document.getElementById('detail-title').innerText = `Program ${index + 1}`;
+            const key = `${category}-${index}`;
+            
+            // Fetch predefined solution OR generate fallback
+            const implementation = predefinedSolutions[key] || getDynamicSolution(category, title);
 
-      const filtered = programs.filter(p => {
-        const matchesCat = filterCat === 'all' || p.category === filterCat;
-        const matchesQuery = p.title.toLowerCase().includes(query.toLowerCase());
-        return matchesCat && matchesQuery;
-      });
+            // Display Source Code in pre/code block
+            const sourceText = 
+`<!-- =============== HTML =============== -->
+${implementation.html}
 
-      filtered.forEach(p => {
-        const li = document.createElement('li');
-        li.className = `program-item ${currentProgram && currentProgram.id === p.id ? 'active' : ''}`;
-        li.onclick = () => loadProgram(p);
-        li.innerHTML = `
-          <div class="title">${p.title}</div>
-          <div class="tag">${p.category.toUpperCase()} • ID #${p.num}</div>
-        `;
-        listEl.appendChild(li);
-      });
-    }
+/* ================= CSS ================= */
+${implementation.css}
 
-    function switchCategory(cat) {
-      activeCategory = cat;
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+// ============== JAVASCRIPT ==============
+${implementation.js}`;
+            
+            document.getElementById('code-block').innerText = sourceText;
 
-      if (cat === 'all') {
-        document.getElementById('dashboardView').classList.remove('hidden');
-        document.getElementById('executionView').style.display = 'none';
-        document.getElementById('sidebarTitle').innerText = "All Programs (434)";
-      } else {
-        document.getElementById('dashboardView').classList.add('hidden');
-        document.getElementById('executionView').style.display = 'flex';
-        document.getElementById('sidebarTitle').innerText = `${cat.toUpperCase()} Questions`;
-      }
-
-      renderProgramList(cat);
-    }
-
-    function loadProgram(program) {
-      currentProgram = program;
-      document.getElementById('dashboardView').classList.add('hidden');
-      document.getElementById('executionView').style.display = 'flex';
-
-      document.getElementById('activeTitle').innerText = program.title;
-      document.getElementById('activeDesc').innerText = program.desc;
-      document.getElementById('codeViewer').textContent = program.code;
-
-      const frame = document.getElementById('previewFrame');
-      const doc = frame.contentWindow.document;
-      doc.open();
-      if (program.category === 'node') {
-        doc.write(`<html><body style="font-family:monospace; padding:20px; background:#0f172a; color:#22c55e;"><h3>[Node.js Backend Runtime Sandbox]</h3><p>This is a server-side Node.js script. Code execution preview simulates server response:</p><pre style="background:#1e293b; padding:15px; border-radius:6px; color:#f8fafc;">${program.code}</pre></body></html>`);
-      } else {
-        doc.write(program.code);
-      }
-      doc.close();
-
-      renderProgramList(activeCategory);
-    }
-
-    function handleSearch() {
-      const q = document.getElementById('searchInput').value;
-      renderProgramList(activeCategory, q);
-    }
-
-    window.onload = () => { renderProgramList(); };
-  </script>
+            // Render Output inside iframe dynamically
+            const iframe = document.getElementById('output-frame');
+            const fullDocument = `
+<!DOCTYPE html>
+<html>
+<head>
+<style>${implementation.css}</style>
+</head>
+<body>
+${implementation.html}
+<script>${implementation.js}<\/script>
+</body>
+</html>`;
+            // Use srcdoc to safely render code inside the iframe
+            iframe.srcdoc = fullDocument;
+            
+            navigate('detail');
+        }
+    </script>
 </body>
 </html>
