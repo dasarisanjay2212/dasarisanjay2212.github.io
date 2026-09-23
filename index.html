@@ -396,7 +396,7 @@
             </div>
             <div class="output-pane glass-panel">
                 <div class="pane-header">Live Preview</div>
-                <iframe id="output-frame"></iframe>
+                <iframe id="output-frame" sandbox="allow-scripts"></iframe>
             </div>
         </div>
     </main>
@@ -620,6 +620,11 @@
         // KEY SOLUTIONS (Mini Projects & Core Concepts)
         // ==========================================
         const predefinedSolutions = {
+            "html-2": { // HTML Tables with Merged Cells
+                html: `<div class="table-container">\n  <h2>Student Grades</h2>\n  <table>\n    <thead>\n      <tr>\n        <th rowspan="2">Student ID</th>\n        <th rowspan="2">Name</th>\n        <th colspan="2">Scores</th>\n      </tr>\n      <tr>\n        <th>Midterm</th>\n        <th>Final</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <td>101</td>\n        <td>Alice</td>\n        <td>85</td>\n        <td>90</td>\n      </tr>\n      <tr>\n        <td>102</td>\n        <td>Bob</td>\n        <td>78</td>\n        <td>82</td>\n      </tr>\n    </tbody>\n  </table>\n</div>`,
+                css: `body { font-family: system-ui; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f8f9fa; margin: 0; }\n.table-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }\nh2 { text-align: center; color: #333; margin-top: 0; }\ntable { border-collapse: collapse; width: 100%; min-width: 400px; text-align: center; }\nth, td { border: 1px solid #ddd; padding: 12px; }\nth { background-color: #0a84ff; color: white; font-weight: 600; }\ntr:nth-child(even) { background-color: #f2f2f2; }\ntr:hover { background-color: #e9ecef; }`,
+                js: ``
+            },
             "html-4": { // Registration Form
                 html: `<div class="container">\n  <h2>Student Registration</h2>\n  <form>\n    <label>Full Name:</label>\n    <input type="text" required placeholder="John Doe">\n    <label>Email ID:</label>\n    <input type="email" required placeholder="john@college.edu">\n    <label>Course:</label>\n    <select>\n      <option>B.Tech CSE</option>\n      <option>B.Tech IT</option>\n    </select>\n    <button type="submit">Register Now</button>\n  </form>\n</div>`,
                 css: `body { font-family: system-ui; background: #f0f2f5; display: flex; justify-content: center; padding: 40px; }\n.container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }\nlabel { display: block; margin-top: 15px; font-weight: 600; font-size: 14px; }\ninput, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }\nbutton { margin-top: 20px; width: 100%; padding: 12px; background: #0a84ff; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }\nbutton:hover { background: #0066cc; }`,
@@ -630,10 +635,20 @@
                 css: `body { font-family: sans-serif; padding: 20px; }\n.flex-container {\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center;\n  background: #333;\n  padding: 20px;\n  border-radius: 12px;\n  height: 300px;\n}\n.box {\n  background: #0a84ff;\n  color: white;\n  padding: 20px;\n  font-size: 1.2rem;\n  font-weight: bold;\n  border-radius: 8px;\n  transition: transform 0.3s;\n}\n.box:hover { transform: scale(1.1); }`,
                 js: ``
             },
+            "css-17": { // CSS Animations
+                html: `<div class="animation-container">\n  <div class="loader"></div>\n  <p>Loading System...</p>\n</div>`,
+                css: `body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #1e1e24; color: white; font-family: sans-serif; margin: 0; }\n.animation-container { text-align: center; }\n.loader {\n  width: 50px;\n  height: 50px;\n  border: 5px solid rgba(255, 255, 255, 0.1);\n  border-top: 5px solid #0a84ff;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n  margin: 0 auto 20px;\n}\n@keyframes spin {\n  0% { transform: rotate(0deg); }\n  100% { transform: rotate(360deg); }\n}\np { letter-spacing: 2px; text-transform: uppercase; font-weight: bold; animation: pulse 1.5s ease-in-out infinite; }\n@keyframes pulse {\n  0%, 100% { opacity: 0.5; }\n  50% { opacity: 1; }\n}`,
+                js: ``
+            },
             "javascript-0": { // Hello World
                 html: `<h1 id="msg"></h1>`,
                 css: `body { display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; background: #f9f9f9; }\nh1 { color: #333; font-size: 3rem; }`,
                 js: `document.getElementById('msg').innerText = "Hello World!";\nconsole.log("Hello World executed.");`
+            },
+            "javascript-1": { // Arithmetic Operations
+                html: `<div class="calc-box">\n  <h2>Arithmetic Ops</h2>\n  <input type="number" id="num1" placeholder="Enter first number">\n  <input type="number" id="num2" placeholder="Enter second number">\n  <select id="operation">\n    <option value="+">Add (+)</option>\n    <option value="-">Subtract (-)</option>\n    <option value="*">Multiply (×)</option>\n    <option value="/">Divide (÷)</option>\n  </select>\n  <button onclick="calculate()">Calculate Result</button>\n  <h3 id="result">Result: </h3>\n</div>`,
+                css: `body { font-family: system-ui; display: flex; justify-content: center; align-items: center; height: 100vh; background: #eef2f5; margin: 0; }\n.calc-box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 15px; width: 320px; }\nh2, h3 { margin: 0; text-align: center; color: #333; }\ninput, select, button { padding: 12px; border-radius: 6px; border: 1px solid #ccc; font-size: 16px; outline: none; }\nbutton { background: #32d74b; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }\nbutton:hover { background: #28a745; }`,
+                js: `function calculate() {\n  const num1 = parseFloat(document.getElementById('num1').value);\n  const num2 = parseFloat(document.getElementById('num2').value);\n  const op = document.getElementById('operation').value;\n  const resEl = document.getElementById('result');\n\n  if (isNaN(num1) || isNaN(num2)) {\n    resEl.innerText = 'Result: Enter both numbers!';\n    return;\n  }\n\n  let result = 0;\n  switch(op) {\n    case '+': result = num1 + num2; break;\n    case '-': result = num1 - num2; break;\n    case '*': result = num1 * num2; break;\n    case '/': result = num2 !== 0 ? num1 / num2 : 'Cannot divide by zero'; break;\n  }\n  resEl.innerText = 'Result: ' + result;\n}`
             },
             "javascript-25": { // Digital Clock
                 html: `<div class="clock-container">\n  <div id="clock">00:00:00</div>\n</div>`,
